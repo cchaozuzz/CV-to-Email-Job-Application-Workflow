@@ -5,7 +5,7 @@ An automated, AI-native workflow built entirely in n8n that dynamically analyzes
 ⚡ Key Features & Architecture
 Intelligent Web Scraping (Jina AI): Dynamically extracts raw text and markdown directly from any live target job posting URL submitted via an n8n form.
 
-Structured Parsing (Gemini 1.5 Flash): Analyzes the scraped job description alongside an uploaded CV, generating a clean structured JSON schema that extracts the company name, role title, top 3 matched skills, an overall alignment score, and a tailored "core alignment edge."
+Structured Parsing (Gemini): Analyzes the scraped job description alongside an uploaded CV, generating a clean structured JSON schema that extracts the company name, role title, top 3 matched skills, an overall alignment score, and a tailored "core alignment edge."
 
 Automated Application CRM (Google Sheets): Automatically updates a live spreadsheet tracking system with submission dates, job details, match scores, and specific value propositions for seamless pipeline management.
 
