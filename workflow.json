@@ -1,0 +1,480 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "pdf",
+        "binaryPropertyName": "=cv_file",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        368
+      ],
+      "id": "82e558fb-20f8-4bfe-9eda-c33d85c27c15",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an expert HR data parser. Analyze the provided job description and candidate resume to extract data according to the schema.\n\nJOB DESCRIPTION:\n{{ $('HTTP Request').item.json.data }}\n\nCANDIDATE RESUME:\n{{ $('Extract from File').item.json.text }}",
+        "hasOutputParser": true,
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        416,
+        368
+      ],
+      "id": "60a0515c-4237-4bc8-909c-e7d232cea414",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        352,
+        576
+      ],
+      "id": "f7bc4eab-fc6c-469f-acc3-65c169050d57",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "uikqKc1jjbEhSrAR",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"company_name\": {\n      \"type\": \"string\",\n      \"description\": \"The name of the company hiring for this position (extracted from the job description)\"\n    },\n    \"job_title\": {\n      \"type\": \"string\",\n      \"description\": \"The official title of the job position (extracted from the job description)\"\n    },\n    \"name\": {\n      \"type\": \"string\",\n      \"description\": \"Candidate's full name\"\n    },\n    \"email\": {\n      \"type\": \"string\",\n      \"description\": \"Candidate's email address\"\n    },\n    \"top_skills\": {\n      \"type\": \"string\",\n      \"description\": \"Comma-separated list of top 3 skills matching this specific role\"\n    },\n    \"match_score\": {\n      \"type\": \"number\",\n      \"description\": \"A score out of 100 on how well the candidate fits this specific role\"\n    },\n    \"superpower\": {\n      \"type\": \"string\",\n      \"description\": \"One short sentence describing why the candidate is a unique fit for this specific company\"\n    }\n  },\n  \"required\": [\"company_name\", \"job_title\", \"name\", \"email\", \"top_skills\", \"match_score\", \"superpower\"]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        560,
+        576
+      ],
+      "id": "07d8d556-af6f-41c1-85ed-0f8dfe41f1ab",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "10hLsVnBPWD2GJnvUwtH8RAegQFd-FHnNdHNRkn2FlsI",
+          "mode": "list",
+          "cachedResultName": "cv_n8n",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10hLsVnBPWD2GJnvUwtH8RAegQFd-FHnNdHNRkn2FlsI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10hLsVnBPWD2GJnvUwtH8RAegQFd-FHnNdHNRkn2FlsI/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Top Skills": "={{ $json.output.top_skills }}",
+            "Match Score": "={{ $json.output.match_score }}",
+            "Date": "={{ $now.format('yyyy-MM-dd') }}",
+            "Company": "={{ $json.output.company_name }}",
+            "Job Title": "={{ $json.output.company_name }}",
+            "Applicant Name": "={{ $json.output.name }}",
+            "Superpower": "={{ $json.output.superpower }}",
+            "Job URL": "={{ $('Form Trigger').item.json.job_url }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Company",
+              "displayName": "Company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Job Title",
+              "displayName": "Job Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Applicant Name",
+              "displayName": "Applicant Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Match Score",
+              "displayName": "Match Score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Top Skills",
+              "displayName": "Top Skills",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Superpower",
+              "displayName": "Superpower",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Job URL",
+              "displayName": "Job URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        768,
+        368
+      ],
+      "id": "9a7840ec-cd8f-40a6-a211-5fc6af33b3b4",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "VBq2KsGsswlUPiB5",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are {{ $('Basic LLM Chain').item.json.output.name }}, a passionate Digital Product Designer and AI Builder. Write a highly tailored, structured, and deeply authentic cover letter email to the team at the company specified in the Job Description. \n\nTo eliminate any \"AI-generated flavor\" and make it sound like a genuine, polite, and top-tier human builder, adhere to the following rules:\n\n🚨 CRITICAL WRITING RULES:\n1. NEVER use the words/phrases: \"My core superpower is\", \"superpower\", \"delightful\", \"testament\", \"more interesting—and difficult—problem\", \"look no further\", \"uniquely positioned\", or robotic corporate jargon.\n2. ⚠️ ABSOLUTE CONSTRAINT: Never mention attaching a screenshot, image, or link of an n8n workflow, as this pipeline does not provide one.\n3. 📋 REQUIRED ACTION: Do naturally mention near the closing paragraph that you have attached your CV/resume for their review.\n4. Vary sentence lengths. Avoid making every paragraph the same length. Use short, punchy statements mixed with thoughtful insights.\n5. Integrate the candidate's skills (UX/UI, AI prototyping) into a cohesive story about user-centric design meeting automation, rather than just listing them.\n6. Extract the actual Company Name and Job Title from the Job Description.\n\n📋 REQUIRED EMAIL STRUCTURE:\n- [Salutation]: Start with a polite and warm greeting (e.g., \"Hi [Company Name] Team,\" or \"Dear [Company Name] Team,\").\n- [Paragraph 1 - The Hook & Why Them]: Express genuine excitement about their specific product/vibe based on the Job Description. Keep it brief.\n- [Paragraph 2 - The Value Proposition (Structured)]: Explain how your background in digital/interaction design combined with hands-on AI prototyping fits their exact needs. Show, don't just tell.\n- [Paragraph 3 - Product Philosophy]: A brief, sharp insight on how you view the intersection of user experience and AI-native workflows (connecting to their product philosophy).\n- [Call to Action & Sign-off]: A polite closing thanking them for their time, explicitly mentioning that your resume/CV is attached to this email, expressing hope to connect, and ending with a professional signature using the candidate's name (e.g., \"Best regards,\\n{{ $('Basic LLM Chain').item.json.output.name }}\").\n\nDATA SOURCES:\n【1. Target Job Description (Scraped Page Text)】:\n{{ $('HTTP Request').item.json.data }}\n\n【2. Candidate Profile (Extracted from CV)】:\n- Name: {{ $('Basic LLM Chain').item.json.output.name }}\n- Top Skills: {{ $('Basic LLM Chain').item.json.output.top_skills }}\n- Core Alignment Edge: {{ $('Basic LLM Chain').item.json.output.superpower }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        976,
+        368
+      ],
+      "id": "e5f1c9b8-55c4-43ae-b5a6-f960dd90dc68",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        976,
+        592
+      ],
+      "id": "0874514a-ed68-44d2-91bf-e77c8ae7adc3",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "uikqKc1jjbEhSrAR",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "for (const item of $input.all()) {\n  // n8n AI Agent nodes output their text result inside the 'output' key\n  const emailText = item.json.output; \n  \n  // Wraps the generated letter in a clean, modern email shell without the header\n  const htmlBody = `\n<div style=\"font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; color: #1a1a1a; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; padding: 24px; border-radius: 12px; background-color: #ffffff;\">\n  <p style=\"font-size: 15px; white-space: pre-line; color: #334155; margin-top: 0;\">${emailText}</p>\n  <br />\n  <div style=\"background-color: #f8fafc; padding: 16px; border-left: 4px solid #FF6C37; border-radius: 6px; font-size: 13px; color: #475569;\">\n    <strong>⚡ Workflow Automation Note:</strong> This letter was dynamically generated by an n8n workflow. The pipeline automatically scraped the target job description via Jina AI, extracted core skills using Gemini, logged tracking data into Google Sheets, and rendered this HTML format.\n  </div>\n</div>\n  `;\n  \n  // Inject the new HTML layout into the JSON stream\n  item.json.htmlBody = htmlBody;\n}\n\nreturn $input.all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1328,
+        368
+      ],
+      "id": "67b5054d-eff6-4717-b6fb-0fe66153db07",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "sendTo": "cchao5913@gmail.com",
+        "subject": "=Application for {{ $('Basic LLM Chain').item.json.output.job_title }} at {{ $('Basic LLM Chain').item.json.output.company_name }} - {{ $('Basic LLM Chain').item.json.output.name }}",
+        "message": "={{ $json.htmlBody }}",
+        "options": {
+          "attachmentsUi": {
+            "attachmentsBinary": [
+              {
+                "property": "=cv_file"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1680,
+        176
+      ],
+      "id": "69ac7960-8789-4640-ba19-b15dd226048f",
+      "name": "Send a message",
+      "webhookId": "95cf692e-f2e6-463a-a0a7-a88bee02fcd7",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "rCIvyticdBeBkbD9",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://r.jina.ai/ {{ $('Form Trigger').item.json.job_url }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        176,
+        368
+      ],
+      "id": "0646845c-0608-49cf-8512-4e7aef3d5b9f",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "formTitle": "Candidate",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Email",
+              "fieldType": "email",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "CV/Resume",
+              "fieldType": "file",
+              "fieldName": "=cv_file",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Job Link URL",
+              "fieldName": "=job_url",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [
+        -176,
+        368
+      ],
+      "id": "36969d70-05fc-4d64-a065-05f84c681f7e",
+      "name": "Form Trigger",
+      "webhookId": "a9512c9f-4456-40a8-aa9f-ca32a7d7ff8e"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1520,
+        176
+      ],
+      "id": "d60d9116-22d6-4248-b7a4-e1c8b75789ec",
+      "name": "Merge"
+    }
+  ],
+  "connections": {
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Form Trigger": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a104eea1112ce42f07ffcaf771fc412b830455b3ed85423ae3dd13c709fa4023"
+  }
+}
