@@ -1,4 +1,4 @@
-# CV-to-Email-Job-Application-Workflow
+# CV-to-Email-Job-Application-Workflow | n8n
 <img width="1372" height="445" alt="image" src="https://github.com/user-attachments/assets/23e180b9-4d84-4e2a-916e-06be5237916f" />
 An automated, AI-native workflow built entirely in n8n that dynamically analyzes job postings, scores candidate alignment, logs tracking data into a Google Sheets CRM, and crafts deeply personalized, human-centric application emails.
 
